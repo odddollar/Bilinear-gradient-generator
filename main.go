@@ -28,7 +28,7 @@ func main() {
 	array := [512][512]pixel{}
 
 	// create progress bar
-	bar := progressbar.Default(768420)
+	bar := progressbar.Default(1030564)
 
 	// assign random values to 4 corners
 	array[0][0].red = rand.Intn(255)
@@ -101,19 +101,14 @@ func main() {
 		_ = bar.Add(1)
 	}
 
-	// print array
-	//for y := 0; y < 512; y++ {
-		//fmt.Println(array[y])
-	//}
-
 	// create and save image
-	createImage(array)
+	createImage(array, bar)
 
 	// print time taken to complete
 	fmt.Printf("Time to complete: %vs", float32(getTime()-start))
 }
 
-func createImage(matrix [512][512]pixel) {
+func createImage(matrix [512][512]pixel, bar *progressbar.ProgressBar) {
 	// create image parameters
 	upLeft := image.Point{0, 0}
 	lowRight:= image.Point{512, 512}
@@ -128,6 +123,9 @@ func createImage(matrix [512][512]pixel) {
 			blue := uint8(matrix[y][x].blue)
 			col := color.RGBA{red, green, blue, 0xff}
 			img.Set(x, y, col)
+
+			// increase progress bar
+			_ = bar.Add(1)
 		}
 	}
 
