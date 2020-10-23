@@ -102,9 +102,9 @@ func main() {
 	}
 
 	// print array
-	for y := 0; y < 512; y++ {
-		fmt.Println(array[y])
-	}
+	//for y := 0; y < 512; y++ {
+		//fmt.Println(array[y])
+	//}
 
 	// create and save image
 	createImage(array)
