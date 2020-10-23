@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/schollz/progressbar"
 	"image"
 	"image/color"
 	"image/png"
@@ -26,6 +27,9 @@ func main() {
 	// create array
 	array := [512][512]pixel{}
 
+	// create progress bar
+	bar := progressbar.Default(768420)
+
 	// assign random values to 4 corners
 	array[0][0].red = rand.Intn(255)
 	array[0][0].green = rand.Intn(255)
@@ -46,46 +50,55 @@ func main() {
 	// top row red
 	for x := 1; x < 511; x++ {
 		array[0][x].red = getValueRed(float64(x), 0, array)
+		_ = bar.Add(1)
 	}
 	// middle chunk red
 	for y := 1; y < 511; y++ {
 		for x := 0; x < 512; x++ {
 			array[y][x].red = getValueRed(float64(x), float64(y), array)
+			_ = bar.Add(1)
 		}
 	}
 	// bottom row red
 	for x := 1; x < 511; x++ {
 		array[511][x].red = getValueRed(float64(x), 511, array)
+		_ = bar.Add(1)
 	}
 
 	// top row green
 	for x := 1; x < 511; x++ {
 		array[0][x].green = getValueGreen(float64(x), 0, array)
+		_ = bar.Add(1)
 	}
 	// middle chunk green
 	for y := 1; y < 511; y++ {
 		for x := 0; x < 512; x++ {
 			array[y][x].green = getValueGreen(float64(x), float64(y), array)
+			_ = bar.Add(1)
 		}
 	}
 	// bottom row green
 	for x := 1; x < 511; x++ {
 		array[511][x].green = getValueGreen(float64(x), 511, array)
+		_ = bar.Add(1)
 	}
 
 	// top row blue
 	for x := 1; x < 511; x++ {
 		array[0][x].blue = getValueBlue(float64(x), 0, array)
+		_ = bar.Add(1)
 	}
 	// middle chunk blue
 	for y := 1; y < 511; y++ {
 		for x := 0; x < 512; x++ {
 			array[y][x].blue = getValueBlue(float64(x), float64(y), array)
+			_ = bar.Add(1)
 		}
 	}
 	// bottom row blue
 	for x := 1; x < 511; x++ {
 		array[511][x].blue = getValueBlue(float64(x), 511, array)
+		_ = bar.Add(1)
 	}
 
 	// print array
