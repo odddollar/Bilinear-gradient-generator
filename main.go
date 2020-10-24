@@ -25,7 +25,7 @@ func main() {
 	blueArray := [512][512]int{}
 
 	// create progress bar
-	bar := progressbar.Default(1030564)
+	bar := progressbar.Default(1048564)
 
 	// assign random values to 4 corners
 	redArray[0][0] = rand.Intn(255)
