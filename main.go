@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/schollz/progressbar"
+	"github.com/schollz/progressbar/v3"
 	"image"
 	"image/color"
 	"image/png"
