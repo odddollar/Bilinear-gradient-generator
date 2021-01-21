@@ -107,9 +107,9 @@ func main() {
 
 func createImage(redArray, greenArray, blueArray [512][512]int, bar *progressbar.ProgressBar) {
 	// create image parameters
-	upLeft := image.Point{0, 0}
-	lowRight:= image.Point{512, 512}
-	img := image.NewRGBA(image.Rectangle{upLeft, lowRight})
+	upLeft := image.Point{X: 0, Y: 0}
+	lowRight := image.Point{X: 512, Y: 512}
+	img := image.NewRGBA(image.Rectangle{Min: upLeft, Max: lowRight})
 
 	// iterate through pixels
 	for y := 0; y < 512; y++ {
@@ -118,7 +118,7 @@ func createImage(redArray, greenArray, blueArray [512][512]int, bar *progressbar
 			red := uint8(redArray[y][x])
 			green := uint8(greenArray[y][x])
 			blue := uint8(blueArray[y][x])
-			col := color.RGBA{red, green, blue, 0xff}
+			col := color.RGBA{R: red, G: green, B: blue, A: 0xff}
 			img.Set(x, y, col)
 
 			// increase progress bar
@@ -133,9 +133,9 @@ func createImage(redArray, greenArray, blueArray [512][512]int, bar *progressbar
 
 func getValue(posX, posY float64, array [512][512]int) int {
 	var calc float64
-	calc = (((511-posX)*(511-posY))/(511*511)*float64(array[0][0])) + ((posX*(511-posY))/(511*511)*float64(array[0][511])) + (((511-posX)*posY)/(511*511)*float64(array[511][0])) + ((posX*posY)/(511*511)*float64(array[511][511]))
+	calc = (((511 - posX) * (511 - posY)) / (511 * 511) * float64(array[0][0])) + ((posX * (511 - posY)) / (511 * 511) * float64(array[0][511])) + (((511 - posX) * posY) / (511 * 511) * float64(array[511][0])) + ((posX * posY) / (511 * 511) * float64(array[511][511]))
 
 	return int(math.Round(calc))
 }
 
-func getTime() float64 {return float64(time.Now().Unix())}
+func getTime() float64 { return float64(time.Now().Unix()) }
