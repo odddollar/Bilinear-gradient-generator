@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-	"github.com/schollz/progressbar/v3"
 	"image"
 	"image/color"
 	"image/png"
@@ -13,9 +11,6 @@ import (
 )
 
 func main() {
-	// get start time
-	start := getTime()
-
 	// create random time seed
 	rand.Seed(time.Now().UnixNano())
 
@@ -23,9 +18,6 @@ func main() {
 	redArray := [512][512]int{}
 	greenArray := [512][512]int{}
 	blueArray := [512][512]int{}
-
-	// create progress bar
-	bar := progressbar.Default(1048564)
 
 	// assign random values to 4 corners
 	redArray[0][0] = rand.Intn(255)
@@ -46,66 +38,54 @@ func main() {
 
 	// top row red
 	for x := 1; x < 511; x++ {
-		redArray[0][x] = getValue(float64(x), 0, redArray)
-		_ = bar.Add(1)
+		redArray[0][x] = getValue(float64(x), 0, &redArray)
 	}
 	// middle chunk red
 	for y := 1; y < 511; y++ {
 		for x := 0; x < 512; x++ {
-			redArray[y][x] = getValue(float64(x), float64(y), redArray)
-			_ = bar.Add(1)
+			redArray[y][x] = getValue(float64(x), float64(y), &redArray)
 		}
 	}
 	// bottom row red
 	for x := 1; x < 511; x++ {
-		redArray[511][x] = getValue(float64(x), 511, redArray)
-		_ = bar.Add(1)
+		redArray[511][x] = getValue(float64(x), 511, &redArray)
 	}
 
 	// top row green
 	for x := 1; x < 511; x++ {
-		greenArray[0][x] = getValue(float64(x), 0, greenArray)
-		_ = bar.Add(1)
+		greenArray[0][x] = getValue(float64(x), 0, &greenArray)
 	}
 	// middle chunk green
 	for y := 1; y < 511; y++ {
 		for x := 0; x < 512; x++ {
-			greenArray[y][x] = getValue(float64(x), float64(y), greenArray)
-			_ = bar.Add(1)
+			greenArray[y][x] = getValue(float64(x), float64(y), &greenArray)
 		}
 	}
 	// bottom row green
 	for x := 1; x < 511; x++ {
-		greenArray[511][x] = getValue(float64(x), 511, greenArray)
-		_ = bar.Add(1)
+		greenArray[511][x] = getValue(float64(x), 511, &greenArray)
 	}
 
 	// top row blue
 	for x := 1; x < 511; x++ {
-		blueArray[0][x] = getValue(float64(x), 0, blueArray)
-		_ = bar.Add(1)
+		blueArray[0][x] = getValue(float64(x), 0, &blueArray)
 	}
 	// middle chunk blue
 	for y := 1; y < 511; y++ {
 		for x := 0; x < 512; x++ {
-			blueArray[y][x] = getValue(float64(x), float64(y), blueArray)
-			_ = bar.Add(1)
+			blueArray[y][x] = getValue(float64(x), float64(y), &blueArray)
 		}
 	}
 	// bottom row blue
 	for x := 1; x < 511; x++ {
-		blueArray[511][x] = getValue(float64(x), 511, blueArray)
-		_ = bar.Add(1)
+		blueArray[511][x] = getValue(float64(x), 511, &blueArray)
 	}
 
 	// create and save image
-	createImage(redArray, greenArray, blueArray, bar)
-
-	// print time taken to complete
-	fmt.Printf("Time to complete: %vs", float32(getTime()-start))
+	createImage(redArray, greenArray, blueArray)
 }
 
-func createImage(redArray, greenArray, blueArray [512][512]int, bar *progressbar.ProgressBar) {
+func createImage(redArray, greenArray, blueArray [512][512]int) {
 	// create image parameters
 	upLeft := image.Point{X: 0, Y: 0}
 	lowRight := image.Point{X: 512, Y: 512}
@@ -120,9 +100,6 @@ func createImage(redArray, greenArray, blueArray [512][512]int, bar *progressbar
 			blue := uint8(blueArray[y][x])
 			col := color.RGBA{R: red, G: green, B: blue, A: 0xff}
 			img.Set(x, y, col)
-
-			// increase progress bar
-			_ = bar.Add(1)
 		}
 	}
 
@@ -131,11 +108,8 @@ func createImage(redArray, greenArray, blueArray [512][512]int, bar *progressbar
 	_ = png.Encode(f, img)
 }
 
-func getValue(posX, posY float64, array [512][512]int) int {
-	var calc float64
-	calc = (((511 - posX) * (511 - posY)) / (511 * 511) * float64(array[0][0])) + ((posX * (511 - posY)) / (511 * 511) * float64(array[0][511])) + (((511 - posX) * posY) / (511 * 511) * float64(array[511][0])) + ((posX * posY) / (511 * 511) * float64(array[511][511]))
+func getValue(posX, posY float64, array *[512][512]int) int {
+	calc := (((511 - posX) * (511 - posY)) / (511 * 511) * float64(array[0][0])) + ((posX * (511 - posY)) / (511 * 511) * float64(array[0][511])) + (((511 - posX) * posY) / (511 * 511) * float64(array[511][0])) + ((posX * posY) / (511 * 511) * float64(array[511][511]))
 
 	return int(math.Round(calc))
 }
-
-func getTime() float64 { return float64(time.Now().Unix()) }
