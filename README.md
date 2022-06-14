@@ -11,3 +11,5 @@ Uses bilinear-interpolation to generate random colour gradients. A random value 
 ![Example 3](examples/image3.png)
 
 ![Example 4](examples/image4.png)
+
+![Example 5](examples/image5.png)
