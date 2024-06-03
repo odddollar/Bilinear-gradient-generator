@@ -4,7 +4,6 @@ import (
 	"image"
 	"image/color"
 	"image/png"
-	"math"
 	"math/rand"
 	"os"
 	"time"
@@ -20,69 +19,55 @@ func main() {
 	blueArray := [512][512]int{}
 
 	// assign random values to 4 corners
-	redArray[0][0] = rand.Intn(255)
-	greenArray[0][0] = rand.Intn(255)
-	blueArray[0][0] = rand.Intn(255)
+	redArray[0][0] = rand.Intn(256)
+	greenArray[0][0] = rand.Intn(256)
+	blueArray[0][0] = rand.Intn(256)
 
-	redArray[0][511] = rand.Intn(255)
-	greenArray[0][511] = rand.Intn(255)
-	blueArray[0][511] = rand.Intn(255)
+	redArray[0][511] = rand.Intn(256)
+	greenArray[0][511] = rand.Intn(256)
+	blueArray[0][511] = rand.Intn(256)
 
-	redArray[511][0] = rand.Intn(255)
-	greenArray[511][0] = rand.Intn(255)
-	blueArray[511][0] = rand.Intn(255)
+	redArray[511][0] = rand.Intn(256)
+	greenArray[511][0] = rand.Intn(256)
+	blueArray[511][0] = rand.Intn(256)
 
-	redArray[511][511] = rand.Intn(255)
-	greenArray[511][511] = rand.Intn(255)
-	blueArray[511][511] = rand.Intn(255)
+	redArray[511][511] = rand.Intn(256)
+	greenArray[511][511] = rand.Intn(256)
+	blueArray[511][511] = rand.Intn(256)
 
-	// top row red
-	for x := 1; x < 511; x++ {
-		redArray[0][x] = getValue(float64(x), 0, &redArray)
-	}
-	// middle chunk red
-	for y := 1; y < 511; y++ {
-		for x := 0; x < 512; x++ {
-			redArray[y][x] = getValue(float64(x), float64(y), &redArray)
-		}
-	}
-	// bottom row red
-	for x := 1; x < 511; x++ {
-		redArray[511][x] = getValue(float64(x), 511, &redArray)
-	}
-
-	// top row green
-	for x := 1; x < 511; x++ {
-		greenArray[0][x] = getValue(float64(x), 0, &greenArray)
-	}
-	// middle chunk green
-	for y := 1; y < 511; y++ {
-		for x := 0; x < 512; x++ {
-			greenArray[y][x] = getValue(float64(x), float64(y), &greenArray)
-		}
-	}
-	// bottom row green
-	for x := 1; x < 511; x++ {
-		greenArray[511][x] = getValue(float64(x), 511, &greenArray)
-	}
-
-	// top row blue
-	for x := 1; x < 511; x++ {
-		blueArray[0][x] = getValue(float64(x), 0, &blueArray)
-	}
-	// middle chunk blue
-	for y := 1; y < 511; y++ {
-		for x := 0; x < 512; x++ {
-			blueArray[y][x] = getValue(float64(x), float64(y), &blueArray)
-		}
-	}
-	// bottom row blue
-	for x := 1; x < 511; x++ {
-		blueArray[511][x] = getValue(float64(x), 511, &blueArray)
-	}
+	// fill individual arrays with interpolated values
+	fillArray(&redArray)
+	fillArray(&greenArray)
+	fillArray(&blueArray)
 
 	// create and save image
 	createImage(redArray, greenArray, blueArray)
+}
+
+func fillArray(array *[512][512]int) {
+	// Calculate all interpolated values for the array
+	for y := 0; y < 512; y++ {
+		for x := 0; x < 512; x++ {
+			calculateAndSet(x, y, array)
+		}
+	}
+}
+
+func calculateAndSet(posX, posY int, array *[512][512]int) {
+	// Calculate weights with floating-point division
+	topLeftWeight := float64((511-posX)*(511-posY)) / (511 * 511)
+	topRightWeight := float64(posX*(511-posY)) / (511 * 511)
+	bottomLeftWeight := float64((511-posX)*posY) / (511 * 511)
+	bottomRightWeight := float64(posX*posY) / (511 * 511)
+
+	// Calculate interpolated value
+	calc := topLeftWeight*float64(array[0][0]) +
+		topRightWeight*float64(array[0][511]) +
+		bottomLeftWeight*float64(array[511][0]) +
+		bottomRightWeight*float64(array[511][511])
+
+	// Set value in array
+	(*array)[posY][posX] = int(calc)
 }
 
 func createImage(redArray, greenArray, blueArray [512][512]int) {
@@ -106,10 +91,4 @@ func createImage(redArray, greenArray, blueArray [512][512]int) {
 	// save image
 	f, _ := os.Create("image.png")
 	_ = png.Encode(f, img)
-}
-
-func getValue(posX, posY float64, array *[512][512]int) int {
-	calc := (((511 - posX) * (511 - posY)) / (511 * 511) * float64(array[0][0])) + ((posX * (511 - posY)) / (511 * 511) * float64(array[0][511])) + (((511 - posX) * posY) / (511 * 511) * float64(array[511][0])) + ((posX * posY) / (511 * 511) * float64(array[511][511]))
-
-	return int(math.Round(calc))
 }
